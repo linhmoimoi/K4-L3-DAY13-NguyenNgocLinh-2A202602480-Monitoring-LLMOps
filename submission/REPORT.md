@@ -50,7 +50,7 @@
 - **Cách tạo/nhận và truyền correlation ID:**
 - **Các metadata được ghi vào structured log:**
 - **Cách bảo đảm PII được scrub trước khi ghi:**
-- **Cách kiểm chứng kết quả:**
+- **Cách kiểm chứng kết quả:** `correlation_id` trong ảnh 04: `req-a04b2026` (đối chiếu với log `request_received` và `response_sent`).
 
 ## 5. Tracing và prompt versioning
 
