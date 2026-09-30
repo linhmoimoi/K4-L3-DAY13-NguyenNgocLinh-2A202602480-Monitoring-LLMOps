@@ -1,0 +1,25 @@
+>> $message = 'a@b.vn 0901234567 001099012345 4111 1111 1111 1111'sent", "env": "dev", "mod
+>> $body = @{user_id='evidence-user-05'; session_id='cp4-evidence-05'; feature='qa'; message=$message} | ConvertTo-Json -Compress4-evidence-04", "correlation_id": "req-4d97486a", 
+>> $headers = @{'x-request-id'=$rid}ture": "qa", "level": "info", "ts": 
+>> $response = Invoke-RestMethod -Uri 'http://127.0.0.1:8000/chat' -Method Post -Headers $headers -ContentType 'application/json' -Body $body
+>> $response | Select-Object correlation_id | Format-List
+>> Select-String -Path 'data/logs.jsonl' -Pattern $rid2480-Monitoring-LLMOps> 
+
+
+correlation_id : req-8345994f
+
+
+
+
+data\logs.jsonl:36:{"service": "api", "payload": {"message_preview": "[REDACTED_EMAIL] 
+[REDACTED_PHONE_VN] [REDACTED_CCCD] [REDACTED_CREDIT_CARD]"}, "event": 
+"request_received", "env": "dev", "model": "claude-sonnet-4-5", "session_id": 
+"cp4-evidence-05", "correlation_id": "req-8345994f", "user_id_hash": "1a94aa72360e", 
+"feature": "qa", "level": "info", "ts": "2026-09-30T07:13:33.161779Z"}
+data\logs.jsonl:37:{"service": "api", "latency_ms": 156, "ttft_ms": 50, "tokens_in": 33, 
+"tokens_out": 81, "cost_usd": 0.001314, "quality_score": 0.8, "tool_name": "retrieval", 
+"tool_success": true, "payload": {"answer_preview": "Starter answer. You should improve 
+this output logic and add better quality chec..."}, "event": "response_sent", "env": 
+"dev", "model": "claude-sonnet-4-5", "session_id": "cp4-evidence-05", "correlation_id": 
+"req-8345994f", "user_id_hash": "1a94aa72360e", "feature": "qa", "level": "info", "ts": 
+"2026-09-30T07:13:33.345682Z"}
