@@ -37,11 +37,11 @@
 
 | Nội dung | Baseline | Kết quả cuối | Nhận xét |
 |---|---|---|---|
-| `validate_logs.py` | | | |
-| `validate_dashboard.py` | | | |
-| `pytest` | | | |
-| Số traces hợp lệ | | | |
-| Số PII leak | | | |
+| `validate_logs.py` | 30/100 | | Baseline: thiếu required fields, correlation ID và enrichment; PII scrubbing đạt. |
+| `validate_dashboard.py` | 6/6 panel hợp lệ | | |
+| `pytest` | 22 passed | | |
+| Số traces hợp lệ | 10 | | Đã xác nhận trong project Langfuse cá nhân. |
+| Số PII leak | 0 | | |
 | Latency P95 / TTFT P95 | | | |
 | Retrieval success rate | | | |
 
