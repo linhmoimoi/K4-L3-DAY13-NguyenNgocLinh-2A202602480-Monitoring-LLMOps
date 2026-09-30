@@ -10,7 +10,7 @@
 - **Repository URL:**
 - **Commit SHA cuối:**
 - **Challenge ID:**
-- **Tên project Langfuse cá nhân:** `day13-k4-l3b-<MSSV>`
+- **T?n project Langfuse c? nh?n:** `day13-k4-l3b-2A202602480`
 
 ## 2. Evidence index
 
@@ -27,7 +27,8 @@
 | Trace waterfall | `evidence/07-trace-waterfall.png` |
 | Trace metadata | `evidence/08-trace-metadata.png` |
 | Prompt versions | `evidence/09-prompt-versions.png` |
-| Prompt rollback | `evidence/10-prompt-rollback.png` |
+| Prompt promote | `evidence/10a-prompt-promote.png` |
+| Prompt rollback | `evidence/10b-prompt-rollback.png` |
 | Dashboard runtime | `evidence/11-dashboard-overview.png` |
 | Incident metric | `evidence/12-incident-metric.png` |
 | Incident log | `evidence/13-incident-log.png` |
@@ -38,12 +39,14 @@
 | Nội dung | Baseline | Kết quả cuối | Nhận xét |
 |---|---|---|---|
 | `validate_logs.py` | 30/100 | | Baseline: thiếu required fields, correlation ID và enrichment; PII scrubbing đạt. |
-| `validate_dashboard.py` | 6/6 panel hợp lệ | | |
+| `validate_dashboard.py` | 6/6 valid | 6/6 valid | Re-run after CP2. |
 | `pytest` | 22 passed | | |
-| Số traces hợp lệ | 10 | | Đã xác nhận trong project Langfuse cá nhân. |
+| Complete traces | 10 CP0 | 104/104 CP2 requests | Every tree has lab-agent-run with retrieval and generation; all correlation IDs match logs. |
 | Số PII leak | 0 | | |
-| Latency P95 / TTFT P95 | | | |
-| Retrieval success rate | | | |
+| Latency P95 / TTFT P95 | | 191 ms / 50 ms | Dashboard, UTC 60-minute window after load test. |
+| Retrieval success rate | | 100% | Counts all boolean tool_success events, including response_sent and request_failed. |
+| CP2 load test | | 100 requests / 10 batches, 04:07-04:19 UTC; all HTTP 200 | Two promote/rollback checks also returned 200. |
+| CP2 trace test | | 1 passed | `python -m pytest -q tests/test_agent_prompt_trace.py`. |
 
 ## 4. Logging và PII
 
@@ -54,21 +57,21 @@
 
 ## 5. Tracing và prompt versioning
 
-- **Cách xác nhận traces do chính tôi tạo trong project cá nhân:**
-- **Cấu trúc root/retrieval/generation observations:**
-- **Cách nối trace với log:**
-- **Prompt name:**
-- **Version/label baseline:**
-- **Version/label candidate:**
-- **Trace ID của mỗi version:**
-- **Cách promote và rollback `production`:**
+- **Trace ownership verification:** Langfuse project `day13-k4-l3b-2A202602480`; compared request log correlation IDs with root metadata. All 104 match.
+- **Observation tree:** `day13-agent-request` -> `lab-agent-run` (AGENT) -> `retrieval` (RETRIEVER) and `generation` (GENERATION). Generation records model, token usage, cost, and managed prompt; raw I/O capture is disabled.
+- **Log correlation:** `correlation_id` is in root trace metadata and request logs; all 104 IDs match.
+- **Prompt name:** `day13-chat` (Text; variables `feature`, `docs`, and `message`).
+- **Version/label baseline:** v1, labels `baseline` and `production` after rollback.
+- **Version/label candidate:** v2, label `candidate` (adds a brief-answer instruction).
+- **Trace IDs:** v1 baseline `85142ab9eb1571cab372b44e490a8f1c` (correlation `req-c2b00101`); v2 candidate `423255e0a85edfacc8b988cb0274b0b7` (correlation `req-c2c00202`).
+- **Production promote and rollback:** temporarily promoted to v2 and verified trace `a9801ffed134e9c44e11e530f8868b2b` (`req-c2a00303`, version 2), then rolled back to v1 and verified trace `616827fee4ca1149ad8e9184f044b161` (`req-c2b00404`, version 1). `.env` remains `LANGFUSE_PROMPT_LABEL=production`; final production points to v1.
 
 ## 6. Dashboard, SLO và alerts
 
-- **Dashboard và sáu panel:**
-- **SLO và lý do chọn:**
-- **Cách tính error budget:**
-- **Ba alert và runbook tương ứng:**
+- **Dashboard panels:** local dashboard reads `data/logs.jsonl`, UTC 60-minute range, 30-second refresh; Latency, Traffic, Errors, Cost, Tokens, Quality. Evidence: `11-dashboard-overview.png`.
+- **SLO rationale:** 99.5% availability; CP0 baseline was 10 requests, 0 failures, P95 1122 ms; 3000 ms latency threshold is above baseline.
+- **Error budget:** reference volume 10,000 requests x 0.5% = 50 requests.
+- **Alerts and runbooks:** elevated latency P95, high request error rate, and low retrieval success; conditions/duration/severity/owner/Slack/runbook are in `config/alert_rules.yaml`; `docs/alerts.md` has Metrics -> Logs -> Traces checks and mitigations.
 
 > Ví dụ cách viết error budget: "SLO 99.5% trong 28 ngày nghĩa là error budget 0.5%. Nếu workload có 10,000 request thì tối đa 50 request được phép lỗi hoặc chậm hơn ngưỡng SLO."
 
