@@ -77,14 +77,14 @@
 
 ## 7. Điều tra challenge
 
-- **Challenge ID:**
-- **Khoảng thời gian điều tra:**
-- **Triệu chứng từ metrics:**
-- **Log line và correlation ID liên quan:**
-- **Trace ID và span gây ảnh hưởng:**
-- **Root cause:**
-- **Fix action:**
-- **Preventive measure:**
+- **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1`. The ignored file was not modified or included; no challenge query/input is included in this report.
+- **Investigation window (UTC):** Baseline requests 2026-09-30 04:40:23-04:40:26; challenge requests 04:43:16-04:43:29.
+- **Metrics:** From log `latency_ms`, baseline 10 requests: P50 153 ms, P95 1050 ms, 0 failures. Challenge 5 requests: P50/P95 2654 ms (individual range 2652-2654 ms), 0 failures. At 04:43 UTC traffic was 5 requests/minute; retrieval success stayed 100%. Dashboard 60-minute P95 showed 2654 ms.
+- **Log line and correlation ID:** `response_sent`, 2026-09-30T04:43:19.061343Z, `correlation_id=req-c2d554c0`, `latency_ms=2654`, `tool_name=retrieval`, `tool_success=true`. Metric values use log latency, not client elapsed time.
+- **Trace ID and affected span:** Challenge trace `e608c8f73e59316c876470597d667722` for `req-c2d554c0`; `retrieval` 2511 ms, `generation` 153 ms, root 2664 ms. Median-latency baseline request `req-5703a9e4`, trace `ba692186a90a1676c5cf9db673c59713`: retrieval 0 ms, generation 163 ms, root 164 ms. All spans had DEFAULT status.
+- **Root cause:** The challenge latency increase is in retrieval: its span grew from 0 ms in the selected baseline trace to 2511 ms, while generation remained near baseline. This aligns with the request latency increase; errors and tool failures were not observed.
+- **Fix action:** After collecting the correlated evidence, disabled the injected challenge incident; `/health` now reports every incident false. The log evidence remains available.
+- **Preventive measure:** Add/operate a retrieval-span latency alert calibrated against baseline. The current 3000 ms request P95 threshold would not alert at 2654 ms despite the large rise, so keep the retrieval symptom visible alongside the overall latency SLO.
 
 > Gợi ý cách viết ngắn, không thay cho evidence thực tế: "Metric cho thấy `[latency/error/cost/quality]` bất thường trong `[khoảng thời gian]`. Log line `[event]` có `correlation_id=[...]` đại diện cho request bị ảnh hưởng. Trace cùng `correlation_id` cho thấy span `[retrieval/generation/prompt/tool]` có dấu hiệu `[chậm/lỗi/token tăng]`. Root cause là `[nguyên nhân suy ra từ evidence]`. Fix action là `[hành động khôi phục]`; preventive measure là `[alert/runbook/test/guardrail để ngăn tái diễn]`."
 
