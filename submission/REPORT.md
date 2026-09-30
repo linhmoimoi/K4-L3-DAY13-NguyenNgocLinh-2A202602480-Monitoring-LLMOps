@@ -1,108 +1,96 @@
 # Báo cáo cá nhân — K4-L3B Day 13 Monitoring & LLMOps
 
-> **Trạng thái evidence:** Một số PNG ban đầu là ảnh dựng; người học đang thay bằng ảnh chụp runtime/UI. Chỉ dẫn ảnh đã kiểm tra đúng nguồn, đọc được và không lộ key/PII. Theo [`evidence/README.md`](evidence/README.md), cập nhật kết quả và đường dẫn sau khi đối chiếu từng ảnh thật.
+> Rà soát ngày 2026-09-30. Các kết quả dưới đây được đối chiếu với lệnh chạy, log cục bộ, cấu hình và ảnh hiện có. Evidence 05 thiếu PNG; ảnh 08 và 14 cần chụp lại vì hiển thị public key. Các mục này chưa đạt điều kiện nộp an toàn.
 
 ## 1. Thông tin học viên
 
-- **Họ và tên:** Chưa xác minh — xác nhận cách viết chính thức.
-- **MSSV:** `2A202602480`
-- **Lớp:** K4-L3B
-- **Repository URL:** [K4-L3-DAY13-NguyenNgocLinh-2A202602480-Monitoring-LLMOps](https://github.com/linhmoimoi/K4-L3-DAY13-NguyenNgocLinh-2A202602480-Monitoring-LLMOps)
-- **Commit nộp cuối:** Chưa có. `git log -1 --oneline` hiện tại phải được chạy lại sau khi hoàn tất thay đổi và chụp evidence.
-- **Challenge ID:** Chưa xác minh từ file challenge cá nhân. Ghi ID được Lab Coach cấp; không đưa nội dung challenge/query vào report.
-- **Project Langfuse cá nhân:** `day13-k4-l3b-2A202602480` (đã thấy trong UI Tracing/Prompts và đối chiếu bằng Langfuse Observations API).
+- **Họ và tên:** Nguyễn Ngọc Linh (theo tên repository).
+- **MSSV:** 2A202602480; **lớp:** K4-L3B.
+- **Repository:** [K4-L3-DAY13-NguyenNgocLinh-2A202602480-Monitoring-LLMOps](https://github.com/linhmoimoi/K4-L3-DAY13-NguyenNgocLinh-2A202602480-Monitoring-LLMOps).
+- **HEAD lúc rà soát:** bf98f7f Done CP34. Report được sửa sau commit này; cần cập nhật SHA sau commit nộp.
+- **Challenge ID:** day13-k4-l3b-monitoring-llmops-v1, đọc từ config/challenge.json cục bộ. File challenge, seed và query không được đưa vào Git.
+- **Project Langfuse:** day13-k4-l3b-2A202602480, khớp MSSV trong report và tên repo.
 
 ## 2. Evidence index
 
-Evidence index dưới đây là checklist đang được cập nhật. File có mặt trong thư mục chưa đồng nghĩa ảnh đã đạt yêu cầu; kiểm tra nguồn, nội dung và key/PII trước khi thay trạng thái bằng link tương đối.
+| Mục | Bằng chứng hiện có | Đánh giá |
+|---|---|---|
+| 01 — pytest | [Ảnh 01](evidence/01-pytest.png) | 24 passed trong .venv; ảnh chưa chứa git log theo hướng dẫn chụp. |
+| 02 — log validator | [Ảnh 02](evidence/02-log-validator.png) | 100/100, 0 PII leak; ảnh chụp lúc có 33 log, lần chạy hiện tại có 123. |
+| 03 — dashboard validator | [Ảnh 03](evidence/03-dashboard-validator.png) | 6/6 panel. |
+| 04 — structured log | [Ảnh 04](evidence/04-structured-log.png) | ID req-4d97486a khớp log và trace; dòng response_sent bị cắt trong ảnh, cần chụp lại. |
+| 05 — PII redaction | evidence/05-pii-redaction.txt | Log có đủ bốn nhãn redaction; file text bị lẫn ký tự terminal và chưa có PNG. |
+| 06 — trace list | [Ảnh 06](evidence/06-trace-list.png) | Project cá nhân hiển thị khoảng 132 root observations; hàng 12:40:32 khớp trace ở ảnh 07–08. |
+| 07 — trace waterfall | [Ảnh 07](evidence/07-trace-waterfall.png) | Trace 0bb93c2942f3dc8a9863cb5273c63edd có retrieval và generation. |
+| 08 — metadata/usage/cost | evidence/08-trace-metadata.png | Cùng trace với 07, có version 1, 133 tokens và 0.001659 USD; cần chụp lại để không hiển thị public key. |
+| 09 — prompt versions | [Ảnh 09](evidence/09-prompt-versions.png) | v1 có production/baseline; v2 có candidate/latest. |
+| 10 — prompt change | [Ảnh 10](evidence/10-prompt-rollback.png) | Chứng minh promote production sang v2. Tên file ghi rollback nhưng ảnh chưa chứng minh rollback. |
+| 11 — dashboard runtime | [Ảnh 11a](evidence/11a-dashboard-latency-traffic.png), [ảnh 11b](evidence/11b-dashboard-error-cost-token-quality.png) | Hai ảnh bao phủ sáu panel; được chụp ở hai thời điểm khác nhau. |
+| 12 — incident metric | [Ảnh 12](evidence/12-incident-metric.png) | Cửa sổ 09:00:39–10:00:39 UTC, P95 2678 ms. |
+| 13 — incident log | [Ảnh 13](evidence/13-incident-log.png) | ID req-7f896a7a, response_sent lúc 09:59:25.481Z, 2678 ms. |
+| 14 — incident trace | evidence/14-incident-trace.png | Cùng ID req-7f896a7a, retrieval 2.50 s; cần chụp lại để không hiển thị public key. |
 
-| Evidence | Đường dẫn ảnh chụp thật |
-|---|---|
-| 01 — pytest cuối | Chưa có ảnh thật: `evidence/01-pytest.png` |
-| 02 — log validator | Chưa có ảnh thật: `evidence/02-log-validator.png` |
-| 03 — dashboard validator | Chưa có ảnh thật: `evidence/03-dashboard-validator.png` |
-| 04 — structured log | Chưa có ảnh thật: `evidence/04-structured-log.png` |
-| 05 — PII redaction | Chưa có ảnh thật: `evidence/05-pii-redaction.png` |
-| 06 — trace list | Chưa có ảnh thật: `evidence/06-trace-list.png` |
-| 07 — trace waterfall | Chưa có ảnh thật: `evidence/07-trace-waterfall.png` |
-| 08 — trace metadata, token/cost | Cần chụp lại `evidence/08-trace-metadata.png`: ảnh hiện có còn hiện `scope.attributes.public_key`; yêu cầu giảng viên dùng một ảnh 08 |
-| 09 — prompt versions | [Ảnh 09](evidence/09-prompt-versions.png): v1 `production`/`baseline`, v2 `candidate`/`latest` |
-| 10 — prompt promote | [Ảnh 10](evidence/10-prompt-rollback.png): v2 nhận label `production`, v1 còn `baseline`; tên file hiện tại là `rollback` nhưng nội dung ảnh là promote |
-| 11 — dashboard runtime | Chưa có ảnh thật: `evidence/11-dashboard-overview.png`; nếu khó đọc, dùng ba ảnh `11a/11b/11c` như README |
-| 12 — incident metric | Chưa có ảnh thật: `evidence/12-incident-metric.png` |
-| 13 — incident log | Chưa có ảnh thật: `evidence/13-incident-log.png` |
-| 14 — incident trace | Chưa có ảnh thật: `evidence/14-incident-trace.png` |
+Ảnh 08 và 14 đang dùng để đối chiếu nội bộ nhưng cần thay bằng ảnh an toàn trước khi nộp. Hướng dẫn chụp ở [evidence/README.md](evidence/README.md).
 
-## 3. Kết quả kỹ thuật
+## 3. Kết quả kiểm tra kỹ thuật
 
-| Nội dung | Baseline | Kết quả cuối | Nguồn / trạng thái |
-|---|---|---|---|
-| `validate_logs.py` | Chưa xác minh | Chưa chạy/chưa có ảnh thật | Chạy theo bước 02; ghi đúng Estimated Score và PII count từ output. |
-| `validate_dashboard.py` | Chưa xác minh bằng output thật | Chưa chạy/chưa có ảnh thật | Chạy theo bước 03; ghi nguyên văn kết quả. |
-| `pytest` | Chưa xác minh | Chưa chạy/chưa có ảnh thật | Chạy theo bước 01 trên trạng thái định nộp. |
-| CP0 baseline | Config ghi 10 requests, 0 failures, latency P95 1122 ms | Chưa có kết quả mới | `config/slo.yaml` ghi nguồn `logs-cp0-baseline.jsonl`, file baseline đã chuyển khỏi repo nên không thể kiểm tra lại từ workspace này. |
-| PII runtime | Chưa xác minh | Chưa có ảnh thật | Source có scrubber và test; cần chụp request dữ liệu giả cùng log đã scrub ở bước 05. |
-| Tracing / prompt versions | Chưa có baseline đo độc lập | Đã xác minh trace dùng v1 và v2 trong project cá nhân | Trace IDs, label, correlation ID và thời điểm UTC ở mục 5 lấy từ Langfuse Observations API; ảnh 08 hiện có cần chụp lại để không hiện public key. |
-| Dashboard runtime | Config định nghĩa 6 panel, cửa sổ 60 phút, refresh 30 giây | Chưa có ảnh thật | `config/dashboard.yaml`; mở dashboard local theo bước 11. |
-| Challenge | Chưa xác minh | Chưa điều tra lại bằng bằng chứng thật | Cần file challenge riêng của Lab Coach và cùng một incident metric → log → trace. |
+| Lệnh / phép kiểm tra | Kết quả lúc rà soát | Ghi chú |
+|---|---|---|
+| .venv\Scripts\python.exe -m pytest -q | **24 passed** trong 2.36 s | Khớp số pass trên ảnh 01. |
+| python -m pytest -q bằng Python hệ thống | **Lỗi khi collect** | Thiếu structlog và langfuse; cần kích hoạt .venv trước khi chạy lệnh checklist. |
+| python scripts/validate_logs.py | **100/100**; 123 records; 62 correlation IDs; 0 thiếu field, 0 thiếu enrichment, 0 PII leak | Ảnh 02 là snapshot cũ nhưng cùng điểm 100/100. |
+| python scripts/validate_dashboard.py | **HỢP LỆ: 6/6 panel** | Khớp ảnh 03. |
+| git status --short | Trống trước lần sửa report này | .env, config/challenge.json, data/logs.jsonl và .venv/ bị ignore, không được track. |
+| git log -1 --oneline | bf98f7f Done CP34 | Cần lấy lại SHA sau commit nộp. |
 
-Chỉ dùng số liệu, timestamp, correlation ID, trace ID hoặc kết luận đã kiểm tra trực tiếp từ runtime, log hay Langfuse; không lấy ảnh dựng trước đó làm nguồn xác minh. Sau khi chạy thật, thay các ô “Chưa xác minh” bằng output và ID lấy trực tiếp từ lần chạy đó.
+CP0 trong [config SLO](../config/slo.yaml) ghi 10 requests, 0 failures và P95 1122 ms. File log CP0 đã chuyển khỏi repo, nên đây chỉ là baseline lưu trong config. Phần incident bên dưới dùng các request còn trong data/logs.jsonl để so sánh trực tiếp.
 
 ## 4. Logging và PII
 
-- **Theo source:** middleware nhận `x-request-id` hợp lệ dạng `req-<8 hex>` hoặc tự tạo ID; ID được gắn vào context và response header.
-- **Theo source:** log API gắn `user_id_hash`, `session_id`, `feature`, `model`, `env`; các event gồm `request_received`, `response_sent` và `request_failed`. Timestamp được ghi UTC.
-- **Theo source:** PII scrubber nằm trong pipeline logging. Ảnh runtime phải chứng minh bằng request dữ liệu giả và log ra các nhãn `[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_CCCD]`, `[REDACTED_CREDIT_CARD]`.
-- **Correlation ID để đối chiếu log và trace:** `req-4d97486a` trong log ảnh 04 khớp metadata trace v1 ở mục 5. Ảnh 04 cần kiểm tra lại độ đầy đủ của dòng `response_sent` trước khi dẫn làm evidence cuối.
+- Middleware truyền correlation ID từ request qua response và structured log. Log có UTC timestamp, user_id_hash, session_id, feature, model, env và các event request_received/response_sent.
+- Request tham chiếu req-4d97486a xuất hiện trong log lúc 2026-09-30T05:40:32.810876Z; response_sent lúc 05:40:32.984710Z, latency 156 ms. Cùng ID nằm trong metadata trace v1.
+- Request kiểm tra PII dùng dữ liệu giả. Log req-8345994f chứa [REDACTED_EMAIL], [REDACTED_PHONE_VN], [REDACTED_CCCD], [REDACTED_CREDIT_CARD]. Validator trên 123 records báo 0 potential PII leaks. Evidence 05 cần chụp lại thành PNG rõ lệnh và output.
 
 ## 5. Tracing và prompt versioning
 
-- **Project Langfuse:** `day13-k4-l3b-2A202602480`, đã thấy trong UI cá nhân; không chụp trang API Keys.
-- **Observation tree theo source:** trace `day13-agent-request` có root `lab-agent-run`, child `retrieval` và `generation`; các decorator trong `app/agent.py`, `app/mock_rag.py`, `app/mock_llm.py` tạo observations. Xác nhận cây thật trong UI trước khi ghi kết quả.
-- **Metadata prompt theo source:** root span cập nhật `correlation_id`, `prompt_name`, `prompt_label`, `prompt_version`, `prompt_source`. Generation cập nhật model, token usage, cost và managed prompt. Không chụp raw Input/Output.
-- **Prompt:** `day13-chat`; màn hình Prompts đã cho thấy v1 và v2 cùng các label `baseline`, `candidate`, `production`.
+- Ảnh 06 cho thấy khoảng 132 root observations trong project cá nhân, vượt mức tối thiểu 10 trace. Hàng **12:40:32 giờ Việt Nam** tương ứng **05:40:32 UTC** trong log req-4d97486a.
+- Ảnh 07 và 08 cùng trace 0bb93c2942f3dc8a9863cb5273c63edd. Root lab-agent-run có child retrieval và generation; UI ghi khoảng 0.17 s, 133 tokens, 0.001659 USD. Metadata cho thấy prompt_name=day13-chat, prompt_label=production, prompt_version=1.
 
-| Prompt version | Label khi request chạy | Trace ID | Correlation ID | Bắt đầu (UTC) |
-|---|---|---|---|---|
-| v1 | `production` | `0bb93c2942f3dc8a9863cb5273c63edd` | `req-4d97486a` | 2026-09-30 05:40:32.810 |
-| v2 | `candidate` | `423255e0a85edfacc8b988cb0274b0b7` | `req-c2c00202` | 2026-09-30 04:06:37.125 |
+| Version | Label khi request chạy | Trace ID | Correlation ID | Bắt đầu (UTC) | Nguồn |
+|---|---|---|---|---|---|
+| 1 | production | 0bb93c2942f3dc8a9863cb5273c63edd | req-4d97486a | 2026-09-30 05:40:32.810 | Ảnh 07–08 và log cục bộ |
+| 2 | candidate | 423255e0a85edfacc8b988cb0274b0b7 | req-c2c00202 | 2026-09-30 04:06:37.125 | Dữ liệu Langfuse Observations API ghi ở lần rà soát trước; ảnh hiện có chưa hiển thị version của trace này |
 
-Hai hàng trên được đối chiếu từ các observation `lab-agent-run` trong project Langfuse bằng API đọc dữ liệu; trace v1 còn hiện trong ảnh 08 đang cần chụp lại an toàn. Trace v2 là request `candidate` trước lần chụp promote hiện tại, nên không được dùng riêng nó để khẳng định ảnh 10 đã tạo request `production` v2.
-- **Promote label `production`:** Ảnh 09 cho thấy label ở v1, còn ảnh 10 cho thấy label đã chuyển sang v2. Hai ảnh chứng minh thay đổi label; chưa có trace mới được xác minh sau lần promote này. Nếu rollback tiếp về v1, ghi hành động và evidence bổ sung.
-- **Múi giờ:** log/dashboard hiển thị UTC. Nếu Langfuse UI hiển thị giờ Việt Nam, ghi giờ UTC+7 và đối chiếu thêm correlation ID/trace ID.
+Ảnh 09 và 10 chứng minh label production chuyển từ v1 sang v2. Chưa có ảnh trace request dùng production sau promote; chưa có ảnh rollback về v1. Hai trạng thái này cần evidence riêng nếu rubric yêu cầu cả promote và rollback. Mốc thời gian Langfuse trong ảnh trace là giờ Việt Nam (UTC+7); timestamp trong log/dashboard là UTC.
 
 ## 6. Dashboard, SLO và alerts
 
-- **Sáu panel theo config:** Latency percentiles and TTFT, Request traffic, Error rate and retrieval success, Cost over time, Input and output tokens, Quality proxy. Dashboard local đọc `data/logs.jsonl`; để thấy dữ liệu, cần chạy API/workload trước, sau đó mở `python scripts/dashboard.py` và vào `http://127.0.0.1:8501`.
-- **SLO theo `config/slo.yaml`:** 99.5% request thành công và latency không quá 3000 ms trong cửa sổ 28 ngày; error budget 0.5%. Với volume tham chiếu 10,000 request, ngân sách tham chiếu là 50 request không đạt (`10,000 × 0.005`). Đây là giá trị cấu hình, không phải kết quả runtime mới.
-- **Guardrails cấu hình:** error rate tối đa 2%, daily cost tối đa 2.5 USD, quality trung bình tối thiểu 0.75, retrieval success tối thiểu 90%.
-- **Alerts cấu hình:** `ElevatedLatencyP95`, `HighRequestErrorRate`, `LowRetrievalSuccess`; xem điều kiện, duration, severity, owner, Slack channel và runbook tại `config/alert_rules.yaml` và `docs/alerts.md`.
-- **Runtime dashboard:** Chưa chụp thật; điền time range, đơn vị, threshold và các số liệu nhìn thấy sau bước 11.
+- [Cấu hình dashboard](../config/dashboard.yaml) có 6 panel: latency/TTFT, traffic, error/retrieval success, cost, tokens, quality. Cửa sổ 60 phút, refresh 30 giây. Ảnh 11a–11b hiển thị cả sáu panel. Ảnh 11a ghi P95 4099 ms ở đợt **08:46 UTC**, khác đợt incident 09:59 UTC trong mục 7.
+- [SLO](../config/slo.yaml): 99.5% request thành công và latency ≤ 3000 ms trong 28 ngày; error budget 0.5%, tương đương **50 request không đạt trên 10.000 request tham chiếu**. Đây là ngân sách theo cấu hình, chưa phải số đã tiêu thụ trong 28 ngày.
+- Guardrails: error rate ≤ 2%, daily cost ≤ 2.5 USD, quality trung bình ≥ 0.75, retrieval success ≥ 90%.
+- [Ba alert](../config/alert_rules.yaml): ElevatedLatencyP95, HighRequestErrorRate, LowRetrievalSuccess; điều kiện, duration, severity, owner và [runbook](../docs/alerts.md) đã được cấu hình.
 
-## 7. Điều tra challenge
+## 7. Điều tra challenge theo Metrics → Logs → Traces
 
-- **Challenge ID:** Chưa xác minh. Điền đúng ID từ challenge cá nhân, không sao chép nội dung/seed/query vào report.
-- **Khoảng thời gian:** Chưa có. Ghi start/end UTC đọc từ dashboard/log, kèm giờ Langfuse UTC+7 nếu khác.
-- **Metric bất thường:** Chưa có. Ghi metric, giá trị baseline, giá trị trong incident và cửa sổ đo từ ảnh 12.
-- **Log request:** Chưa có. Chọn correlation ID trong output lọc ở ảnh 13; ghi event, timestamp UTC và trường bất thường.
-- **Trace/span:** Chưa có. Tìm trace cùng correlation ID, ghi trace ID, tên span và duration thật từ ảnh 14.
-- **Root cause:** Chưa xác minh. Chỉ kết luận sau khi metric, log và trace cùng trỏ tới request/khoảng sự cố.
-- **Fix action / preventive measure:** Chưa xác minh. Ghi hành động đã thực hiện và biện pháp phòng ngừa có thể kiểm chứng; không ghi hành động giả định như đã hoàn thành.
+- **Challenge ID:** day13-k4-l3b-monitoring-llmops-v1; feature chịu ảnh hưởng: monitoring; ngưỡng latency của challenge: **2000 ms**. Không công bố seed hoặc query.
+- **Baseline cùng lần chạy:** 10 request từ 09:58:51.013Z đến 09:58:52.538Z có latency **153–223 ms**. Năm request challenge từ 09:59:17.482Z đến 09:59:28.154Z có latency **2653–2678 ms**, đều vượt ngưỡng challenge 2000 ms.
+- **Metric:** Ảnh 12 hiển thị cửa sổ 09:00:39.660687Z–10:00:39.660687Z, P95 latency **2678 ms** và TTFT P95 **50 ms**. P95 này **dưới** ngưỡng SLO/dashboard 3000 ms, nên ảnh không chứng minh SLO P95 bị vi phạm. Bất thường được xác định qua baseline cùng lần chạy và ngưỡng challenge.
+- **Log:** req-7f896a7a bắt đầu 09:59:22.800323Z, kết thúc 09:59:25.481287Z với response_sent, latency **2678 ms**, tool_name=retrieval, tool_success=true. Không có error event cho request này.
+- **Trace:** Trace ebaf90f1b39ea70a37aaaf4366530aa6 có metadata correlation_id=req-7f896a7a. UI hiển thị bắt đầu **16:59:22.800 giờ Việt Nam**, đúng bằng **09:59:22.800 UTC**; root mất **2.68 s**, retrieval **2.50 s**, generation **0.16 s**.
+- **Nguyên nhân:** Phần lớn thời gian request nằm ở retrieval. [Implementation retrieval](../app/mock_rag.py) có nhánh làm chậm 2.5 s khi chế độ incident bật; thời lượng span và log phù hợp với nhánh này.
+- **Hành động xử lý:** Repo chưa có bằng chứng rằng incident đã được tắt và đo lại. Cần tắt chế độ làm chậm qua endpoint incident, chạy lại workload và ghi metric/log/trace sau xử lý. Alert P95 hiện đặt ở 3000 ms nên mức suy giảm 2.65–2.68 s này có thể không kích hoạt alert latency; nên đánh giá thêm ngưỡng cảnh báo riêng cho retrieval.
 
 ## 8. Giải thích và tự đánh giá
 
-- **Quyết định kỹ thuật (theo source hiện có):** truyền cùng correlation ID qua middleware, structured log và trace metadata để tìm đúng request; scrub PII trước khi log được serialize.
-- **Blocker đã gặp và cách xử lý:** Chưa xác minh từ trải nghiệm thực tế của học viên. Ghi lỗi thật, cách tìm nguyên nhân và thao tác đã xử lý sau khi chạy CP4.
-- **Metrics → Logs → Traces:** metric khoanh triệu chứng/khoảng thời gian; log chọn request qua correlation ID; trace phân rã duration theo span để xác định bước gây ảnh hưởng.
-- **Vai trò prompt/token/cost/SLO/rollback:** prompt version cho biết request dùng biến thể nào; token/cost thể hiện mức sử dụng; SLO/error budget định nghĩa ngưỡng dịch vụ; rollback chuyển production về version đã biết ổn định khi có căn cứ.
-- **Điều học được:** Chưa ghi — hoàn thiện sau khi tự chạy và điều tra incident.
-- **Hạn chế còn lại:** Hiện chưa có evidence runtime thật. Các kết luận và số liệu CP1–CP3 cần điền lại theo ảnh chụp thật và artifact có thể đối chiếu.
+- **Quyết định kỹ thuật:** Dùng cùng correlation ID qua middleware, structured log và trace metadata; scrub PII trước khi log được serialize. Trace có span riêng cho retrieval và generation để định vị độ trễ.
+- **Vấn đề lúc kiểm tra:** Python hệ thống thiếu dependencies nên pytest lỗi lúc collect; Python của .venv cho 24 tests passed. Evidence 05 thiếu PNG và ảnh 08/14 hiển thị public key, cần thay trước khi nộp.
+- **Vai trò prompt/token/cost/SLO/rollback:** Prompt version gắn biến thể được dùng với trace; token/cost đo mức sử dụng; SLO và error budget đặt ngưỡng dịch vụ. Ảnh hiện có chứng minh promote label, chưa chứng minh rollback.
+- **Điều rút ra:** Request có thể vượt ngưỡng challenge 2000 ms nhưng vẫn dưới SLO P95 3000 ms. So sánh baseline, log và span cho thấy sự suy giảm ở retrieval dù alert latency chưa chắc kích hoạt.
 
-## 9. Checklist trước khi nộp
+## 9. Việc còn lại trước khi nộp
 
-- [ ] Kiểm tra/thay ảnh dựng bằng evidence chụp thật 01–14 theo `submission/evidence/README.md`; chụp lại ảnh 08 để không hiện `public_key`.
-- [ ] Lưu ảnh thật cùng tên, cập nhật Evidence index và chèn liên kết tương đối tới các file đã tồn tại.
-- [ ] Ghi kết quả validator/test, trace IDs, correlation IDs, prompt versions, challenge ID và incident timestamps từ output/UI thật.
-- [ ] Xác nhận họ tên, project Langfuse cá nhân và commit cuối.
-- [ ] Rà secret/PII, đảm bảo ảnh Langfuse không mở API Keys và không có raw prompt/input/output nhạy cảm.
-- [ ] Kiểm tra log UTC ↔ Langfuse UTC+7, liên kết metric → log → trace và các đường dẫn trên GitHub.
+- [ ] Chụp PNG evidence 05; chụp lại 04 để thấy đủ response_sent; chụp lại 08 và 14 để không hiển thị public key.
+- [ ] Bổ sung evidence trace dùng production v2 sau promote và rollback nếu rubric yêu cầu cả hai hành động.
+- [ ] Ghi nhận thao tác tắt incident và kết quả đo lại, hoặc giữ rõ giới hạn điều tra ở mục 7.
+- [ ] Chạy python -m pytest -q trong .venv và hai validator trên trạng thái cuối; cập nhật ảnh và số liệu nếu kết quả thay đổi.
+- [ ] Rà các ảnh còn lại về nguồn gốc và dữ liệu nhạy cảm; kiểm tra link tương đối trên GitHub; commit bài làm rồi cập nhật SHA nộp cuối.
